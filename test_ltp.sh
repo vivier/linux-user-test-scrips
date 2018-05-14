@@ -1,10 +1,18 @@
 unset LANG
 
-TAG=$(date --iso-8601=seconds)
+. ./helpers.sh
+
+umount_cleanup
+
 TAR=ltp-full-20180118
 
 ARCH=$1
 RELEASE=$2
+TAG=$3
+if [ "$TAG" = "" ] ; then
+    TAG=$(date --iso-8601=seconds)
+fi
+
 CHROOT=chroot/$ARCH/$RELEASE
 ARCHIVE=archive/$ARCH/$TAG
 
@@ -12,8 +20,17 @@ rm -f archive/$ARCH/previous
 mv archive/$ARCH/latest archive/$ARCH/previous
 mkdir -p $ARCHIVE
 
+$CHROOT/qemu-* -version > $ARCHIVE/VERSION
+cat $CHROOT/etc/debian_version > $ARCHIVE/RELEASE
+RELEASE=$(cat $ARCHIVE/RELEASE)
+
+APT_OPT=--allow-insecure-repositories
+if [ "$RELEASE" = "8.10" ]; then
+    APT_OPT=""
+fi
+
 cp $TAR.tar.xz $CHROOT/root && \
-chroot $CHROOT apt --allow-unauthenticated --allow-insecure-repositories -y update &&
+chroot $CHROOT apt --allow-unauthenticated $APT_OPT -y update &&
 chroot $CHROOT apt -y --allow-unauthenticated install gcc xz-utils make sudo iproute2 procps && \
 if [ ! -d $CHROOT/opt/ltp ] ; then
 
@@ -39,6 +56,7 @@ fstat05
 EOF
 elif [ "$ARCH" = "mips64el" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
+fcntl14
 fcntl14_64
 EOF
 elif [ "$ARCH" = "aarch64" ] ; then
@@ -61,10 +79,7 @@ cd /opt/ltp &&
 rm -f output/* results/* &&
 time ./runltp -f syscalls -S ./skipfile -g ltp-$ARCH-$TAG.html -o ltp-$ARCH-$TAG.log
 EOF
-sudo umount $CHROOT/proc
-sudo umount $CHROOT/dev
-$CHROOT/qemu-* -version > $ARCHIVE/VERSION
-cat $CHROOT/etc/debian_version > $ARCHIVE/RELEASE
+umount_cleanup
 cp -pr $CHROOT/opt/ltp/results $CHROOT/opt/ltp/output $ARCHIVE
 sed -i "s?/opt/ltp?$SARCHIVE?g" $ARCHIVE/output/ltp-$ARCH-$TAG.html
 ln -s $TAG archive/$ARCH/latest
