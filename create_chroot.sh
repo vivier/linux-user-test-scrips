@@ -35,7 +35,7 @@ case $TARGET in
         UPDATE_OPT="--allow-unauthenticated --allow-insecure-repositories"
         UPGRADE_OPT="--allow-unauthenticated"
         case $QEMU_ARCH in
-        m68k|ppc64|sh4|sparc64|riscv64|alpha|sparc32plus)
+        m68k|ppc64|sh4|sparc64|riscv64|alpha)
             REPO=http://cdn-fastly.deb.debian.org/debian-ports/
             ;;
         *)  REPO=http://ftp.fr.debian.org/debian  ;;
@@ -47,7 +47,8 @@ esac
 CHROOT=chroot/$ARCH/$TARGET
 
 if [ -d $CHROOT ] ; then
-    echo "$CHROOT exists, skipping"
+    cp "$QEMU_PATH" $CHROOT/ || exit 1
+    echo "$CHROOT exists, updating qemu and skipping"
     exit 0
 fi
  
