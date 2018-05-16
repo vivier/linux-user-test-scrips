@@ -4,7 +4,7 @@ unset LANG
 
 umount_cleanup
 
-TAR=ltp-full-20180118
+TAR=ltp-full-20180515
 
 ARCH=$1
 RELEASE=$2
@@ -25,19 +25,23 @@ cat $CHROOT/etc/debian_version > $ARCHIVE/RELEASE
 RELEASE=$(cat $ARCHIVE/RELEASE)
 
 APT_OPT=--allow-insecure-repositories
-if [ "$RELEASE" = "8.10" ]; then
+if [ "$RELEASE" = "8.10" -o "$RELEASE" = "5.0.10" ]; then
     APT_OPT=""
 fi
 
-cp $TAR.tar.xz $CHROOT/root && \
-chroot $CHROOT apt --allow-unauthenticated $APT_OPT -y update &&
-chroot $CHROOT apt -y --allow-unauthenticated install gcc xz-utils make sudo iproute2 procps && \
+chroot $CHROOT apt-get --allow-unauthenticated $APT_OPT -y update
+chroot $CHROOT apt-get -y --allow-unauthenticated install gcc xz-utils make sudo iproute2 procps
+
+if [ ! -e $CHROOT/root/$TAR ] ; then
+    ( cp $TAR.tar.xz $CHROOT/root  && \
+      cd $CHROOT/root && tar Jxvf $TAR.tar.xz )
+fi
+
 if [ ! -d $CHROOT/opt/ltp ] ; then
 
+    rm -f $CHROOT/opt/ltp
     chroot $CHROOT 2>&1 <<EOF
-cd /root && \
-tar Jxvf $TAR.tar.xz && \
-cd $TAR && \
+cd /root/$TAR && \
 ./configure && \
 make -j $(getconf _NPROCESSORS_ONLN) && \
 make install

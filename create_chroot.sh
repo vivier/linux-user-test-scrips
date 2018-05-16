@@ -35,6 +35,7 @@ case $QEMU_ARCH in
     mips64el)    UTS_MACHINE=mips64 ;;
     arm)         UTS_MACHINE=armv7l ;;
     hppa)        UTS_MACHINE=parisc ;;
+    sparc32plus) UTS_MACHINE=sparc ;;
     *)           UTS_MACHINE=$QEMU_ARCH ;;
 esac
 
@@ -54,10 +55,10 @@ case $TARGET in
         m68k|ppc64|sh4|sparc64|riscv64|alpha)
             REPO=http://cdn-fastly.deb.debian.org/debian-ports/
             ;;
-        *)  REPO=http://ftp.fr.debian.org/debian  ;;
+        *)  REPO=http://ftp.us.debian.org/debian  ;;
         esac
         ;;
-    *)     REPO=http://ftp.fr.debian.org/debian  ;;
+    *)     REPO=http://ftp.us.debian.org/debian  ;;
 esac
 
 CHROOT=chroot/$ARCH/$TARGET
@@ -76,6 +77,8 @@ EOF
     if [ $? -ne 0 ] ; then
         exit
     fi
+    chroot $CHROOT apt-get clean
+    (mkdir -p rootfs/$ARCH/$TARGET && cd $CHROOT && tar Jcf $OLDPWD/rootfs/$ARCH/$TARGET/rootfs.tar.xz .)
 else
     echo "$CHROOT exists, updating qemu and skipping"
     cp "$QEMU_PATH" $CHROOT/ || exit 1
