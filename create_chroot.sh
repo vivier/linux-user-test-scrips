@@ -41,6 +41,12 @@ esac
 APT_OPT=""
 case $TARGET in
     lenny) REPO=http://archive.debian.org/debian ;;
+    etch)
+        REPO=http://archive.debian.org/debian
+        case $QEMU_ARCH in
+        m68k) TARGET=etch-m68k
+        esac
+        ;;
     sid)
         UPDATE_OPT="--allow-unauthenticated --allow-insecure-repositories"
         UPGRADE_OPT="--allow-unauthenticated"
@@ -96,7 +102,7 @@ chroot $CHROOT date &&
 chroot $CHROOT ls -l /qemu-$QEMU_ARCH && 
 chroot $CHROOT apt-get update $UPDATE_OPT --yes &&
 chroot $CHROOT apt-get upgrade $UPGRADE_OPT --yes &&
-chroot $CHROOT apt-get install --yes --allow-unauthenticated debian-keyring debian-archive-keyring gcc &&
+chroot $CHROOT apt-get install --yes --allow-unauthenticated debian-keyring debian-archive-keyring gcc libc6-dev &&
 chroot $CHROOT apt-key update &&
 chroot $CHROOT gcc /tmp/hello.c -o /tmp/hello &&
 chroot $CHROOT /tmp/hello | grep "Hello World!"
