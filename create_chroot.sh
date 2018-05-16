@@ -1,3 +1,5 @@
+unset LANG
+
 QEMU_PATH="$1"
 if [ ! -x "$QEMU_PATH" ] ; then
     echo "Specify path to qemu linux-user"
@@ -28,6 +30,14 @@ case $QEMU_ARCH in
     *)           ARCH=$QEMU_ARCH ;;
 esac
 
+case $QEMU_ARCH in
+    mipsel)      UTS_MACHINE=mips ;;
+    mips64el)    UTS_MACHINE=mips64 ;;
+    arm)         UTS_MACHINE=armv7l ;;
+    hppa)        UTS_MACHINE=parisc ;;
+    *)           UTS_MACHINE=$QEMU_ARCH ;;
+esac
+
 APT_OPT=""
 case $TARGET in
     lenny) REPO=http://archive.debian.org/debian ;;
@@ -46,24 +56,47 @@ esac
 
 CHROOT=chroot/$ARCH/$TARGET
 
-if [ -d $CHROOT ] ; then
-    cp "$QEMU_PATH" $CHROOT/ || exit 1
-    echo "$CHROOT exists, updating qemu and skipping"
-    exit 0
-fi
- 
-mkdir -p $CHROOT
-debootstrap --arch=$ARCH --foreign --variant=minbase --no-check-gpg $TARGET $CHROOT $REPO && \
-cp "$QEMU_PATH" $CHROOT/ && \
-chroot $CHROOT ./debootstrap/debootstrap --second-stage || exit
+if [ ! -d $CHROOT ] ; then
+    mkdir -p $CHROOT
+    debootstrap --arch=$ARCH --foreign --variant=minbase --no-check-gpg \
+                $TARGET $CHROOT $REPO && \
+    cp "$QEMU_PATH" $CHROOT/ && \
+    chroot $CHROOT ./debootstrap/debootstrap --second-stage || exit
 
-cat > $CHROOT/etc/apt/sources.list <<EOF
+    cat > $CHROOT/etc/apt/sources.list <<EOF
 deb $REPO $TARGET main
 EOF
 
-if [ $? -ne 0 ] ; then
-    exit
+    if [ $? -ne 0 ] ; then
+        exit
+    fi
+else
+    echo "$CHROOT exists, updating qemu and skipping"
+    cp "$QEMU_PATH" $CHROOT/ || exit 1
 fi
 
-chroot $CHROOT apt-get update $UPDATE_OPT --yes && \
-chroot $CHROOT apt-get upgrade $UPGRADE_OPT --yes
+cat > $CHROOT/tmp/hello.c <<EOF
+#include <stdio.h>
+int main(void)
+{
+    printf("Hello World!\n");
+    return 0;
+}
+EOF
+
+TARGET_MACHINE=$(chroot $CHROOT uname -m)
+if [ "$TARGET_MACHINE" != "$UTS_MACHINE" ] ; then
+    echo "UTS machine mismatch $TARGET_MACHINE and $UTS_MACHINE" 1>&2
+    exit 1
+fi
+
+chroot $CHROOT ip a
+chroot $CHROOT uname -a &&
+chroot $CHROOT date &&
+chroot $CHROOT ls -l /qemu-$QEMU_ARCH && 
+chroot $CHROOT apt-get update $UPDATE_OPT --yes &&
+chroot $CHROOT apt-get upgrade $UPGRADE_OPT --yes &&
+chroot $CHROOT apt-get install --yes --allow-unauthenticated debian-keyring debian-archive-keyring gcc &&
+chroot $CHROOT apt-key update &&
+chroot $CHROOT gcc /tmp/hello.c -o /tmp/hello &&
+chroot $CHROOT /tmp/hello | grep "Hello World!"
