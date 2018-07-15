@@ -1,4 +1,5 @@
 unset LANG
+export QEMU_LOG=unimp
 
 . ./helpers.sh
 

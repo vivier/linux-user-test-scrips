@@ -1,4 +1,5 @@
 unset LANG
+export QEMU_LOG=unimp
 
 QEMU_PATH="$1"
 if [ ! -x "$QEMU_PATH" ] ; then
