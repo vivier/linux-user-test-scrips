@@ -27,6 +27,7 @@ case $QEMU_ARCH in
     arm)         ARCH=armhf      ;;
     armeb)       ARCH=armel      ;;
     aarch64)     ARCH=arm64      ;;
+    x86_64)      ARCH=amd64      ;;
     *)           ARCH=$QEMU_ARCH ;;
 esac
 
@@ -36,6 +37,7 @@ case $QEMU_ARCH in
     arm)         UTS_MACHINE=armv7l ;;
     hppa)        UTS_MACHINE=parisc ;;
     sparc32plus) UTS_MACHINE=sparc ;;
+    i386)        UTS_MACHINE=i686      ;;
     *)           UTS_MACHINE=$QEMU_ARCH ;;
 esac
 
@@ -53,13 +55,15 @@ case $TARGET in
         UPGRADE_OPT="--allow-unauthenticated"
         case $QEMU_ARCH in
         m68k|ppc64|sh4|sparc64|riscv64|alpha)
-            REPO=http://cdn-fastly.deb.debian.org/debian-ports/
+            REPO=http://ftp.de.debian.org/debian-ports/
             ;;
-        *)  REPO=http://ftp.us.debian.org/debian  ;;
+        *)  REPO=http://ftp.de.debian.org/debian  ;;
         esac
         ;;
-    *)     REPO=http://ftp.us.debian.org/debian  ;;
+    *)     REPO=http://ftp.de.debian.org/debian  ;;
 esac
+
+echo "REPO=$REPO"
 
 CHROOT=chroot/$ARCH/$TARGET
 
