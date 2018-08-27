@@ -21,16 +21,18 @@ if [ "$TARGET" = "" ] ; then
     exit 1
 fi
 
-case $QEMU_ARCH in
-    ppc)         ARCH=powerpc    ;;
-    ppc64le)     ARCH=ppc64el    ;;
-    sparc32plus) ARCH=sparc      ;;
-    arm)         ARCH=armhf      ;;
-    armeb)       ARCH=armel      ;;
-    aarch64)     ARCH=arm64      ;;
-    x86_64)      ARCH=amd64      ;;
-    *)           ARCH=$QEMU_ARCH ;;
-esac
+if [ "$ARCH" == "" ]; then
+    case $QEMU_ARCH in
+        ppc)         ARCH=powerpc    ;;
+        ppc64le)     ARCH=ppc64el    ;;
+        sparc32plus) ARCH=sparc      ;;
+        arm)         ARCH=armhf      ;;
+        armeb)       ARCH=armel      ;;
+        aarch64)     ARCH=arm64      ;;
+        x86_64)      ARCH=amd64      ;;
+        *)           ARCH=$QEMU_ARCH ;;
+    esac
+fi
 
 case $QEMU_ARCH in
     mipsel)      UTS_MACHINE=mips ;;
@@ -47,15 +49,15 @@ case $TARGET in
     lenny) REPO=http://archive.debian.org/debian ;;
     etch)
         REPO=http://archive.debian.org/debian
-        case $QEMU_ARCH in
+        case $ARCH in
         m68k) TARGET=etch-m68k
         esac
         ;;
     sid)
         UPDATE_OPT="--allow-unauthenticated --allow-insecure-repositories"
         UPGRADE_OPT="--allow-unauthenticated"
-        case $QEMU_ARCH in
-        m68k|ppc64|sh4|sparc64|riscv64|alpha)
+        case $ARCH in
+        m68k|ppc64|sh4|sparc64|riscv64|alpha|powerpc|powerpcspe)
             REPO=http://ftp.de.debian.org/debian-ports/
             ;;
         *)  REPO=http://ftp.de.debian.org/debian  ;;
