@@ -85,6 +85,7 @@ rm -f output/* results/* &&
 time ./runltp -f syscalls -S ./skipfile -g ltp-$ARCH-$TAG.html -o ltp-$ARCH-$TAG.log
 EOF
 umount_cleanup
+ipcs > $ARCHIVE/ipcs.log
 cp -pr $CHROOT/opt/ltp/results $CHROOT/opt/ltp/output $ARCHIVE
 sed -i "s?/opt/ltp?$SARCHIVE?g" $ARCHIVE/output/ltp-$ARCH-$TAG.html
 ln -s $TAG archive/$ARCH/latest
