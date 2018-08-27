@@ -88,6 +88,7 @@ else
     echo "$CHROOT exists, updating qemu and skipping"
     cp "$QEMU_PATH" $CHROOT/ || exit 1
 fi
+$CHROOT/$QEMU_NAME -version
 
 cat > $CHROOT/tmp/hello.c <<EOF
 #include <stdio.h>
