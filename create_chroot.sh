@@ -45,7 +45,21 @@ case $QEMU_ARCH in
 esac
 
 APT_OPT=""
+DISTRO_KEYRING="debian-keyring debian-archive-keyring"
 case $TARGET in
+    # ubuntu
+    xenial|trusty|precise|cosmic|bionic|artful|devel)
+        DISTRO_KEYRING="ubuntu-keyring ubuntu-extras-keyring"
+        case $ARCH in
+        armhf|arm64|powerpc|ppc64el)
+            REPO=http://ports.ubuntu.com/ubuntu-ports/
+            ;;
+        *)
+            REPO=http://ftp.ubuntu.com/ubuntu/
+            ;;
+        esac
+        ;;
+    # debian
     lenny) REPO=http://archive.debian.org/debian ;;
     etch)
         REPO=http://archive.debian.org/debian
@@ -63,7 +77,12 @@ case $TARGET in
         *)  REPO=http://ftp.de.debian.org/debian  ;;
         esac
         ;;
-    *)     REPO=http://ftp.de.debian.org/debian  ;;
+    stretch|jessie|wheezy)
+        REPO=http://ftp.de.debian.org/debian
+        ;;
+    *)  echo "Unknown distro target $TARGET"
+        exit 1
+        ;;
 esac
 
 echo "REPO=$REPO"
@@ -113,7 +132,8 @@ chroot $CHROOT date &&
 chroot $CHROOT ls -l /qemu-$QEMU_ARCH && 
 chroot $CHROOT apt-get update $UPDATE_OPT --yes &&
 chroot $CHROOT apt-get upgrade $UPGRADE_OPT --yes &&
-chroot $CHROOT apt-get install --yes --allow-unauthenticated debian-keyring debian-archive-keyring gcc libc6-dev &&
+chroot $CHROOT apt-get install --yes --allow-unauthenticated $DISTRO_KEYRING &&
+chroot $CHROOT apt-get install --yes --allow-unauthenticated gcc libc6-dev &&
 chroot $CHROOT apt-key update &&
 chroot $CHROOT gcc /tmp/hello.c -o /tmp/hello &&
 chroot $CHROOT /tmp/hello | grep "Hello World!"
