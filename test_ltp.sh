@@ -3,8 +3,6 @@ export QEMU_LOG=unimp
 
 . ./helpers.sh
 
-umount_cleanup
-
 TAR=ltp-full-20180515
 
 ARCH=$1
@@ -30,8 +28,14 @@ if [ "$RELEASE" = "8.10" -o "$RELEASE" = "5.0.10" ]; then
     APT_OPT=""
 fi
 
-chroot $CHROOT apt-get --allow-unauthenticated $APT_OPT -y update
-chroot $CHROOT apt-get -y --allow-unauthenticated install gcc xz-utils make sudo iproute2 procps
+isolate $CHROOT <<EOF
+export PATH=/usr/bin:/usr/sbin:/bin:/sbin
+mount proc /proc -t proc
+mount dev /dev -t devtmpfs
+mount devpts /dev/pts -t devpts
+apt-get --allow-unauthenticated $APT_OPT -y update
+apt-get -y --allow-unauthenticated install gcc xz-utils make sudo iproute2 procps
+EOF
 
 if [ ! -e $CHROOT/root/$TAR ] ; then
     ( cp $TAR.tar.xz $CHROOT/root  && \
@@ -41,7 +45,11 @@ fi
 if [ ! -d $CHROOT/opt/ltp ] ; then
 
     rm -f $CHROOT/opt/ltp
-    chroot $CHROOT 2>&1 <<EOF
+    isolate $CHROOT 2>&1 <<EOF
+export PATH=/usr/bin:/usr/sbin:/bin:/sbin
+mount proc /proc -t proc
+mount dev /dev -t devtmpfs
+mount devpts /dev/pts -t devpts
 cd /root/$TAR && \
 ./configure && \
 make -j $(getconf _NPROCESSORS_ONLN) && \
@@ -77,15 +85,17 @@ msgctl10
 EOF
 fi
 
-mount /proc $CHROOT/proc -o bind && \
-mount /dev $CHROOT/dev -o bind && \
-chroot $CHROOT <<EOF
+isolate $CHROOT <<EOF
+export PATH=/usr/bin:/usr/sbin:/bin:/sbin
+mount proc /proc -t proc
+mount dev /dev -t devtmpfs
+mount devpts /dev/pts -t devpts
 cd /opt/ltp &&
 rm -f output/* results/* &&
 time ./runltp -f syscalls -S ./skipfile -g ltp-$ARCH-$TAG.html -o ltp-$ARCH-$TAG.log
+ipcs > ipcs.log
 EOF
-umount_cleanup
-ipcs > $ARCHIVE/ipcs.log
+cp -pr $CHROOT/opt/ltp/ipcs.log $ARCHIVE
 cp -pr $CHROOT/opt/ltp/results $CHROOT/opt/ltp/output $ARCHIVE
 sed -i "s?/opt/ltp?$SARCHIVE?g" $ARCHIVE/output/ltp-$ARCH-$TAG.html
 ln -s $TAG archive/$ARCH/latest

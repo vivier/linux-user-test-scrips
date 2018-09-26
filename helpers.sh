@@ -10,9 +10,7 @@ function copy_binaries
     done
 }
 
-function umount_cleanup
+function isolate
 {
-    grep chroot /etc/mtab|cut -d' ' -f 2,2 | while read mountpoint; do
-        umount $mountpoint
-    done
+    unshare --ipc --uts --pid --fork --kill-child --mount chroot "$@"
 }
