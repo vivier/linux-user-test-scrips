@@ -46,6 +46,7 @@ esac
 
 APT_OPT=""
 DISTRO_KEYRING="debian-keyring debian-archive-keyring"
+INCLUDE="iputils-ping,apt-utils"
 case $TARGET in
     # ubuntu
     xenial|trusty|precise|cosmic|bionic|artful|devel)
@@ -91,7 +92,8 @@ CHROOT=chroot/$ARCH/$TARGET
 
 if [ ! -d $CHROOT ] ; then
     mkdir -p $CHROOT
-    debootstrap --arch=$ARCH --foreign --variant=minbase --no-check-gpg \
+    debootstrap --include="$INCLUDE" \
+                --arch=$ARCH --foreign --variant=minbase --no-check-gpg \
                 $TARGET $CHROOT $REPO && \
     cp "$QEMU_PATH" $CHROOT/ && \
     chroot $CHROOT ./debootstrap/debootstrap --second-stage || exit
