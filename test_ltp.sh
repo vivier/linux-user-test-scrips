@@ -15,8 +15,6 @@ fi
 CHROOT=chroot/$ARCH/$RELEASE
 ARCHIVE=archive/$ARCH/$TAG
 
-rm -f archive/$ARCH/previous
-mv archive/$ARCH/latest archive/$ARCH/previous
 mkdir -p $ARCHIVE
 
 $CHROOT/qemu-* -version > $ARCHIVE/VERSION
@@ -95,8 +93,10 @@ rm -f output/* results/* &&
 time ./runltp -f syscalls -S ./skipfile -g ltp-$ARCH-$TAG.html -o ltp-$ARCH-$TAG.log
 ipcs > ipcs.log
 EOF
-cp -pr $CHROOT/opt/ltp/ipcs.log $ARCHIVE
-cp -pr $CHROOT/opt/ltp/results $CHROOT/opt/ltp/output $ARCHIVE
-sed -i "s?/opt/ltp?$SARCHIVE?g" $ARCHIVE/output/ltp-$ARCH-$TAG.html
+cp -pr $CHROOT/opt/ltp/ipcs.log $ARCHIVE && \
+cp -pr $CHROOT/opt/ltp/results $CHROOT/opt/ltp/output $ARCHIVE && \
+sed -i "s?/opt/ltp?$SARCHIVE?g" $ARCHIVE/output/ltp-$ARCH-$TAG.html && \
+rm -f archive/$ARCH/previous && \
+mv archive/$ARCH/latest archive/$ARCH/previous && \
 ln -s $TAG archive/$ARCH/latest
 
