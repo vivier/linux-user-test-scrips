@@ -13,7 +13,7 @@ if [ "$TAG" = "" ] ; then
 fi
 
 CHROOT=chroot/$ARCH/$RELEASE
-ARCHIVE=archive/$ARCH/$TAG
+ARCHIVE=archive/$ARCH/$RELEASE/$TAG
 
 mkdir -p $ARCHIVE
 
