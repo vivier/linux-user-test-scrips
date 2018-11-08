@@ -19,10 +19,10 @@ mkdir -p $ARCHIVE
 
 $CHROOT/qemu-* -version > $ARCHIVE/VERSION
 cat $CHROOT/etc/debian_version > $ARCHIVE/RELEASE
-RELEASE=$(cat $ARCHIVE/RELEASE)
+RELEASE_NUMBER=$(cat $ARCHIVE/RELEASE)
 
 APT_OPT=--allow-insecure-repositories
-if [ "$RELEASE" = "8.10" -o "$RELEASE" = "5.0.10" ]; then
+if [ "$RELEASE_NUMBER" = "8.10" -o "$RELEASE_NUMBER" = "5.0.10" ]; then
     APT_OPT=""
 fi
 
