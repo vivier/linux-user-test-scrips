@@ -93,10 +93,9 @@ rm -f output/* results/* &&
 time ./runltp -f syscalls -S ./skipfile -g ltp-$ARCH-$TAG.html -o ltp-$ARCH-$TAG.log
 ipcs > ipcs.log
 EOF
-cp -pr $CHROOT/opt/ltp/ipcs.log $ARCHIVE && \
-cp -pr $CHROOT/opt/ltp/results $CHROOT/opt/ltp/output $ARCHIVE && \
-sed -i "s?/opt/ltp?$SARCHIVE?g" $ARCHIVE/output/ltp-$ARCH-$TAG.html && \
-rm -f archive/$ARCH/previous && \
-mv archive/$ARCH/latest archive/$ARCH/previous && \
-ln -s $TAG archive/$ARCH/latest
-
+cp -pr $CHROOT/opt/ltp/ipcs.log $ARCHIVE
+cp -pr $CHROOT/opt/ltp/results $CHROOT/opt/ltp/output $ARCHIVE
+sed -i "s?/opt/ltp?$SARCHIVE?g" $ARCHIVE/output/ltp-$ARCH-$TAG.html
+rm -f archive/$ARCH/$RELEASE/previous
+mv archive/$ARCH/$RELEASE/latest archive/$ARCH/$RELEASE/previous
+ln -s $TAG archive/$ARCH/$RELEASE/latest
