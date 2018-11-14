@@ -32,7 +32,9 @@ mount proc /proc -t proc
 mount dev /dev -t devtmpfs
 mount devpts /dev/pts -t devpts
 apt-get --allow-unauthenticated $APT_OPT -y update
-apt-get -y --allow-unauthenticated install gcc xz-utils make sudo iproute2 procps
+apt-get -y --allow-unauthenticated install gcc make sudo procps
+apt-get -y --allow-unauthenticated install iproute2
+apt-get -y --allow-unauthenticated install xz-utils
 EOF
 
 if [ ! -e $CHROOT/root/$TAR ] ; then
