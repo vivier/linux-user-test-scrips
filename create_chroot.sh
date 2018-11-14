@@ -46,9 +46,24 @@ esac
 
 APT_OPT=""
 DISTRO_KEYRING="debian-keyring debian-archive-keyring"
-INCLUDE="iputils-ping,apt-utils"
+INCLUDE="iputils-ping,apt-utils,gnupg2"
 case $TARGET in
     # ubuntu
+    bionic)
+        INCLUDE="iputils-ping,apt-utils,gnupg"
+        DISTRO_KEYRING="ubuntu-keyring"
+        case $ARCH in
+        armhf|arm64|powerpc|ppc64el|s390x)
+            REPO=http://ports.ubuntu.com/ubuntu-ports/
+            ;;
+	i386|amd64)
+            REPO=http://ftp.ubuntu.com/ubuntu/
+	    ;;
+        *)
+            echo "Unsupported ubuntu target $TARGET $ARCH" 1>&2
+	    exit 1
+	esac
+        ;;
     xenial|trusty|precise|cosmic|bionic|artful|devel)
         DISTRO_KEYRING="ubuntu-keyring ubuntu-extras-keyring"
         case $ARCH in
