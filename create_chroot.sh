@@ -1,6 +1,8 @@
 unset LANG
 export QEMU_LOG=unimp
 
+. ./helpers.sh
+
 QEMU_PATH="$1"
 if [ ! -x "$QEMU_PATH" ] ; then
     echo "Specify path to qemu linux-user"
@@ -114,7 +116,7 @@ if [ ! -d $CHROOT ] ; then
                 --arch=$ARCH --foreign --variant=minbase --no-check-gpg \
                 $TARGET $CHROOT $REPO && \
     cp "$QEMU_PATH" $CHROOT/ && \
-    chroot $CHROOT ./debootstrap/debootstrap --second-stage || exit
+    isolate $CHROOT ./debootstrap/debootstrap --second-stage || exit
 
     cat > $CHROOT/etc/apt/sources.list <<EOF
 deb $REPO $TARGET main
@@ -123,7 +125,7 @@ EOF
     if [ $? -ne 0 ] ; then
         exit
     fi
-    chroot $CHROOT apt-get clean
+    isolate $CHROOT apt-get clean
     (mkdir -p rootfs/$ARCH/$TARGET && cd $CHROOT && tar Jcf $OLDPWD/rootfs/$ARCH/$TARGET/rootfs.tar.xz .)
 else
     echo "$CHROOT exists, updating qemu and skipping"
@@ -140,20 +142,20 @@ int main(void)
 }
 EOF
 
-TARGET_MACHINE=$(chroot $CHROOT uname -m)
+TARGET_MACHINE=$(isolate $CHROOT uname -m)
 if [ "$TARGET_MACHINE" != "$UTS_MACHINE" ] ; then
     echo "UTS machine mismatch $TARGET_MACHINE and $UTS_MACHINE" 1>&2
     exit 1
 fi
 
-chroot $CHROOT ip a
-chroot $CHROOT uname -a &&
-chroot $CHROOT date &&
-chroot $CHROOT ls -l /qemu-$QEMU_ARCH && 
-chroot $CHROOT apt-get update $UPDATE_OPT --yes &&
-chroot $CHROOT apt-get upgrade $UPGRADE_OPT --yes &&
-chroot $CHROOT apt-get install --yes --allow-unauthenticated $DISTRO_KEYRING &&
-chroot $CHROOT apt-get install --yes --allow-unauthenticated gcc libc6-dev &&
-chroot $CHROOT apt-key update &&
-chroot $CHROOT gcc /tmp/hello.c -o /tmp/hello &&
-chroot $CHROOT /tmp/hello | grep "Hello World!"
+isolate $CHROOT ip a
+isolate $CHROOT uname -a &&
+isolate $CHROOT date &&
+isolate $CHROOT ls -l /qemu-$QEMU_ARCH && 
+isolate $CHROOT apt-get update $UPDATE_OPT --yes &&
+isolate $CHROOT apt-get upgrade $UPGRADE_OPT --yes &&
+isolate $CHROOT apt-get install --yes --allow-unauthenticated $DISTRO_KEYRING &&
+isolate $CHROOT apt-get install --yes --allow-unauthenticated gcc libc6-dev &&
+isolate $CHROOT apt-key update &&
+isolate $CHROOT gcc /tmp/hello.c -o /tmp/hello &&
+isolate $CHROOT /tmp/hello | grep "Hello World!"
