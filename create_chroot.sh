@@ -81,7 +81,7 @@ case $TARGET in
         esac
         ;;
     # debian
-    lenny) REPO=http://archive.debian.org/debian ;;
+    lenny|jessie|wheezy) REPO=http://archive.debian.org/debian ;;
     etch)
         REPO=http://archive.debian.org/debian
         case $ARCH in
@@ -90,7 +90,7 @@ case $TARGET in
         ;;
     sid)
         UPDATE_OPT="--allow-unauthenticated --allow-insecure-repositories"
-        UPGRADE_OPT="--allow-unauthenticated"
+        UPGRADE_OPT="--allow-unauthenticated --fix-missing"
         case $ARCH in
         m68k|ppc64|sh4|sparc64|riscv64|alpha|powerpc|powerpcspe)
             REPO=http://ftp.de.debian.org/debian-ports/
@@ -98,7 +98,7 @@ case $TARGET in
         *)  REPO=http://ftp.de.debian.org/debian  ;;
         esac
         ;;
-    stretch|jessie|wheezy)
+    stretch)
         REPO=http://ftp.de.debian.org/debian
         ;;
     *)  echo "Unknown distro target $TARGET"
