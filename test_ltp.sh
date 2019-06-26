@@ -5,11 +5,28 @@ export QEMU_LOG=unimp
 
 TAR=ltp-full-20180515
 
-ARCH=$1
+QEMU_ARCH=$1
 RELEASE=$2
 TAG=$3
 if [ "$TAG" = "" ] ; then
     TAG=$(date --iso-8601=seconds)
+fi
+
+if [ "$ARCH" == "" ]; then
+    case $QEMU_ARCH in
+        ppc)         ARCH=powerpc    ;;
+        ppc64le)     ARCH=ppc64el    ;;
+        sparc32plus) ARCH=sparc      ;;
+        arm)         ARCH=armhf      ;;
+        armeb)       ARCH=armel      ;;
+        aarch64)     ARCH=arm64      ;;
+        x86_64)      ARCH=amd64      ;;
+        *)           ARCH=$QEMU_ARCH ;;
+    esac
+fi
+
+if [ "$ARCH" = "m68k" -a "$RELEASE" = "etch" ] ; then
+    RELEASE="etch-m68k"
 fi
 
 CHROOT=chroot/$ARCH/$RELEASE
@@ -37,9 +54,11 @@ apt-get -y --allow-unauthenticated install iproute2
 apt-get -y --allow-unauthenticated install xz-utils
 EOF
 
-if [ ! -e $CHROOT/root/$TAR ] ; then
-    ( cp $TAR.tar.xz $CHROOT/root  && \
-      cd $CHROOT/root && tar Jxvf $TAR.tar.xz )
+if ! cmp $TAR.tar.xz $CHROOT/root/$TAR.tar.xz ; then
+    cp $TAR.tar.xz $CHROOT/root || exit 1
+fi
+if [ ! -e $CHROOT/root/$TAR/configure ] ; then
+	( cd $CHROOT/root && tar Jxvf $TAR.tar.xz ) || exit 1
 fi
 
 if [ ! -d $CHROOT/opt/ltp ] ; then
