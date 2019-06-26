@@ -3,7 +3,12 @@ export QEMU_LOG=unimp
 
 . ./helpers.sh
 
-TAR=ltp-full-20180515
+LTPVERSION=20190517
+TAR=ltp-full-$LTPVERSION
+
+if [ ! -e $TAR.tar.xz ] ; then
+    wget https://github.com/linux-test-project/ltp/releases/download/$LTPVERSION/ltp-full-$LTPVERSION.tar.xz
+fi
 
 QEMU_ARCH=$1
 RELEASE=$2
