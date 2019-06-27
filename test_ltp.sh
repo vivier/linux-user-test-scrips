@@ -118,6 +118,11 @@ EOF
 elif [ "$ARCH" = "m68k" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
 mq_notify01
+msgstress04
+EOF
+elif [ "$ARCH" = "powerpc" ] ; then
+cat >> $CHROOT/opt/ltp/skipfile <<EOF
+mremap03
 EOF
 fi
 
