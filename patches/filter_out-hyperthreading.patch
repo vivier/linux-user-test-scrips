@@ -1,0 +1,11 @@
+diff --git a/testcases/kernel/sched/Makefile b/testcases/kernel/sched/Makefile
+index 6a57d79ee934..b4db7fcc3d1f 100644
+--- a/testcases/kernel/sched/Makefile
++++ b/testcases/kernel/sched/Makefile
+@@ -24,4 +24,6 @@ top_srcdir            ?= ../../..
+ 
+ include $(top_srcdir)/include/mk/env_pre.mk
+ 
++FILTER_OUT_DIRS += hyperthreading
++
+ include $(top_srcdir)/include/mk/generic_trunk_target.mk

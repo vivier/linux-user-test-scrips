@@ -1,0 +1,11 @@
+diff --git a/testcases/kernel/syscalls/Makefile b/testcases/kernel/syscalls/Makefile
+index 45a00cf7d416..d331a7d8cd38 100644
+--- a/testcases/kernel/syscalls/Makefile
++++ b/testcases/kernel/syscalls/Makefile
+@@ -45,4 +45,6 @@ FILTER_OUT_DIRS       += \
+        setdomainname sethostname symlinkat ulimit ustat vfork vhangup vmsplice
+ endif
+ 
++FILTER_OUT_DIRS += cacheflush
++
+ include $(top_srcdir)/include/mk/generic_trunk_target.mk

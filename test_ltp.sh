@@ -3,13 +3,6 @@ export QEMU_LOG=unimp
 
 . ./helpers.sh
 
-LTPVERSION=20190517
-TAR=ltp-full-$LTPVERSION
-
-if [ ! -e $TAR.tar.xz ] ; then
-    wget https://github.com/linux-test-project/ltp/releases/download/$LTPVERSION/ltp-full-$LTPVERSION.tar.xz
-fi
-
 QEMU_ARCH=$1
 RELEASE=$2
 TAG=$3
@@ -34,6 +27,21 @@ if [ "$ARCH" = "m68k" -a "$RELEASE" = "etch" ] ; then
     RELEASE="etch-m68k"
 fi
 
+LTPVERSION=20190517
+case $ARCH-$RELEASE in
+    m68k-etch-m68k) LTPVERSION=20150119
+	            PATCHES="filter_out-cacheflush.patch filter_out-containers.patch filter_out-hyperthreading.patch" ;;
+    hppa-lenny)     LTPVERSION=20150119 ;;
+    alpha-sid)      : ;;
+    m68k-sid)       PATCHES="filter_out-cacheflush.patch filter_out-containers.patch filter_out-hyperthreading.patch" ;;
+esac
+
+TAR=ltp-full-$LTPVERSION
+if [ ! -e $TAR.tar.xz ] ; then
+    wget https://github.com/linux-test-project/ltp/releases/download/$LTPVERSION/ltp-full-$LTPVERSION.tar.xz
+fi
+
+PATCHDIR=$PWD/patches
 CHROOT=chroot/$ARCH/$RELEASE
 ARCHIVE=archive/$ARCH/$RELEASE/$TAG
 
@@ -64,6 +72,9 @@ if ! cmp $TAR.tar.xz $CHROOT/root/$TAR.tar.xz ; then
 fi
 if [ ! -e $CHROOT/root/$TAR/configure ] ; then
 	( cd $CHROOT/root && tar Jxvf $TAR.tar.xz ) || exit 1
+	for patch in $PATCHES ; do
+		( cd $CHROOT/root/$TAR && patch -p1 < $PATCHDIR/$patch )
+	done
 fi
 
 if [ ! -d $CHROOT/opt/ltp ] ; then
@@ -96,16 +107,17 @@ cat >> $CHROOT/opt/ltp/skipfile <<EOF
 fcntl14
 fcntl14_64
 EOF
-elif [ "$ARCH" = "aarch64" ] ; then
+elif [ "$ARCH" = "hppa" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
-futex_wait03
-msgctl10
+mq_notify01
 EOF
-elif [ "$ARCH" = "armhf" ] ; then
+elif [ "$ARCH" = "riscv64" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
-creat07
-futex_wait03
-msgctl10
+msgstress04
+EOF
+elif [ "$ARCH" = "m68k" ] ; then
+cat >> $CHROOT/opt/ltp/skipfile <<EOF
+mq_notify01
 EOF
 fi
 

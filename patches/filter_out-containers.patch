@@ -1,0 +1,11 @@
+diff --git a/testcases/kernel/Makefile b/testcases/kernel/Makefile
+index 39d79c7d80ae..98b34ed91512 100644
+--- a/testcases/kernel/Makefile
++++ b/testcases/kernel/Makefile
+@@ -66,4 +66,6 @@ FILTER_OUT_DIRS               += containers controllers device-drivers fs io ipc mem \
+                                sched security timers
+ endif
+ 
++FILTER_OUT_DIRS += containers
++
+ include $(top_srcdir)/include/mk/generic_trunk_target.mk
