@@ -66,7 +66,7 @@ case $TARGET in
 	    exit 1
 	esac
         ;;
-    xenial|trusty|precise|cosmic|bionic|artful|devel)
+    xenial|trusty|precise|cosmic|bionic|artful|eoan|devel)
         DISTRO_KEYRING="ubuntu-keyring ubuntu-extras-keyring"
         case $ARCH in
         armhf|arm64|powerpc|ppc64el|s390x)
