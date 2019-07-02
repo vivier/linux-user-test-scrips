@@ -1,0 +1,13 @@
+iff --git a/lib/tst_sig.c b/lib/tst_sig.c
+index 6d77aeafdb27..7f2c72610faa 100644
+--- a/lib/tst_sig.c
++++ b/lib/tst_sig.c
+@@ -152,7 +152,7 @@ void tst_sig(int fork_flag, void (*handler) (), void (*cleanup) ())
+		case __SIGRTMIN + 15:
+ /* __SIGRTMIN is 37 on HPPA rather than 32 *
+  * as on i386, etc.                        */
+-#if !defined(__hppa__)
++#if 1
+		case __SIGRTMAX - 15:
+		case __SIGRTMAX - 14:
+		case __SIGRTMAX - 13:

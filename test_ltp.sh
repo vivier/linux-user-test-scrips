@@ -31,7 +31,7 @@ LTPVERSION=20190517
 case $ARCH-$RELEASE in
     m68k-etch-m68k) LTPVERSION=20150119
 	            PATCHES="filter_out-cacheflush.patch filter_out-containers.patch filter_out-hyperthreading.patch" ;;
-    hppa-lenny)     LTPVERSION=20150119 ;;
+    hppa-sid)       PATCHES="fix-hppa-SIGRTMIN.patch" ;;
     alpha-sid)      : ;;
     m68k-sid)       PATCHES="filter_out-cacheflush.patch filter_out-containers.patch filter_out-hyperthreading.patch" ;;
 esac

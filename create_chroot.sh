@@ -92,7 +92,7 @@ case $TARGET in
         UPDATE_OPT="--allow-unauthenticated --allow-insecure-repositories"
         UPGRADE_OPT="--allow-unauthenticated --fix-missing"
         case $ARCH in
-        m68k|ppc64|sh4|sparc64|riscv64|alpha|powerpc|powerpcspe)
+        m68k|ppc64|sh4|sparc64|riscv64|alpha|powerpc|powerpcspe|hppa)
             REPO=http://ftp.de.debian.org/debian-ports/
             ;;
         *)  REPO=http://ftp.de.debian.org/debian  ;;
