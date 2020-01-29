@@ -54,6 +54,7 @@ case $TARGET in
     bionic)
         INCLUDE="iputils-ping,apt-utils,gnupg"
         DISTRO_KEYRING="ubuntu-keyring"
+	NEED_GO="yes"
         case $ARCH in
         armhf|arm64|powerpc|ppc64el|s390x)
             REPO=http://ports.ubuntu.com/ubuntu-ports/
@@ -66,7 +67,22 @@ case $TARGET in
 	    exit 1
 	esac
         ;;
-    xenial|trusty|precise|cosmic|bionic|artful|eoan|devel)
+    xenial|precise|cosmic|bionic|artful|eoan|devel)
+	NEED_GO="yes"
+        DISTRO_KEYRING="ubuntu-keyring ubuntu-extras-keyring"
+        case $ARCH in
+        armhf|arm64|powerpc|ppc64el|s390x)
+            REPO=http://ports.ubuntu.com/ubuntu-ports/
+            ;;
+        i386|amd64)
+            REPO=http://ftp.ubuntu.com/ubuntu/
+            ;;
+        *)
+            echo "Unsupported ubuntu target $TARGET $ARCH" 1>&2
+            exit 1
+        esac
+	;;
+    trusty)
         DISTRO_KEYRING="ubuntu-keyring ubuntu-extras-keyring"
         case $ARCH in
         armhf|arm64|powerpc|ppc64el|s390x)
@@ -81,7 +97,9 @@ case $TARGET in
         esac
         ;;
     # debian
-    lenny|jessie|wheezy) REPO=http://archive.debian.org/debian ;;
+    lenny|jessie|wheezy)
+        REPO=http://archive.debian.org/debian
+	;;
     etch)
         REPO=http://archive.debian.org/debian
         case $ARCH in
@@ -92,10 +110,13 @@ case $TARGET in
         UPDATE_OPT="--allow-unauthenticated --allow-insecure-repositories"
         UPGRADE_OPT="--allow-unauthenticated --fix-missing"
         case $ARCH in
-        m68k|ppc64|sh4|sparc64|riscv64|alpha|powerpc|powerpcspe|hppa)
+	m68k|ppc64|sh4|sparc64|riscv64|alpha|powerpc|powerpcspe|hppa)
             REPO=http://ftp.de.debian.org/debian-ports/
             ;;
-        *)  REPO=http://ftp.de.debian.org/debian  ;;
+        *)
+	    REPO=http://ftp.de.debian.org/debian
+	    NEED_GO="yes"
+	    ;;
         esac
         ;;
     stretch)
@@ -148,6 +169,7 @@ if [ "$TARGET_MACHINE" != "$UTS_MACHINE" ] ; then
     exit 1
 fi
 
+
 isolate $CHROOT ip a
 isolate $CHROOT uname -a &&
 isolate $CHROOT date &&
@@ -158,4 +180,21 @@ isolate $CHROOT apt-get install --yes --allow-unauthenticated $DISTRO_KEYRING &&
 isolate $CHROOT apt-get install --yes --allow-unauthenticated gcc libc6-dev &&
 isolate $CHROOT apt-key update &&
 isolate $CHROOT gcc /tmp/hello.c -o /tmp/hello &&
-isolate $CHROOT /tmp/hello | grep "Hello World!"
+isolate $CHROOT /tmp/hello | grep "Hello World!" || exit
+
+if [ "$NEED_GO" = "yes" ] ; then
+    isolate $CHROOT apt-get install --yes --allow-unauthenticated golang || exit
+
+    if [ -x $CHROOT/usr/bin/go ] ; then
+	    cat > $CHROOT/tmp/hello.go <<EOF
+package main
+
+import "fmt"
+
+func main() {
+        fmt.Println("Hello Google!")
+}
+EOF
+    fi
+    isolate $CHROOT go run /tmp/hello.go
+fi
