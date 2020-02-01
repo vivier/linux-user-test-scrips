@@ -44,6 +44,11 @@ BASEURL="http://download-ib01.fedoraproject.org/pub/fedora-secondary/releases/${
 REPO="$BASEURL/Server/os"
 echo "REPO=$REPO"
 
+NAME=Fedora-Container-Base-$TARGET-1.2.$ARCH.tar.xz
+case $QEMU_ARCH in
+    s390x)	NAME=Fedora-Container-Minimal-Base-$TARGET-1.2.$ARCH.tar.xz ;;
+esac
+
 CHROOT=chroot/$ARCH/${TARGET}
 
 if [ ! -d $CHROOT ] ; then
@@ -52,7 +57,7 @@ if [ ! -d $CHROOT ] ; then
     TOP=$PWD
     TEMP=$(mktemp -d)
     cd $TEMP && \
-    curl -o container.tar.xz  $BASEURL/Container/$ARCH/images/Fedora-Container-Base-$TARGET-1.2.$ARCH.tar.xz && \
+    curl -o container.tar.xz  $BASEURL/Container/$ARCH/images/$NAME && \
     tar Jxvf container.tar.xz */layer.tar && \
     (cd $TOP/$CHROOT && tar xf $TEMP/*/layer.tar) && rm -fr "$TEMP"
 
