@@ -107,6 +107,10 @@ cat >> $CHROOT/opt/ltp/skipfile <<EOF
 fcntl14
 fcntl14_64
 EOF
+elif [ "$ARCH" = "mips" ] ; then
+cat >> $CHROOT/opt/ltp/skipfile <<EOF
+msgstress04
+EOF
 elif [ "$ARCH" = "hppa" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
 mq_notify01
