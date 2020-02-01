@@ -21,6 +21,6 @@ for release in $RELEASES ; do
 
         echo "diff $release $arch $TAG"
 	dir=archive/$arch/$release
-	diff -u $dir/$PREVIOUS/results/* $dir/$LATEST/results/*
+	diff -wu $dir/$PREVIOUS/results/* $dir/$LATEST/results/*
     done
 done
