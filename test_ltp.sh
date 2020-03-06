@@ -27,7 +27,7 @@ if [ "$ARCH" = "m68k" -a "$RELEASE" = "etch" ] ; then
     RELEASE="etch-m68k"
 fi
 
-LTPVERSION=20190517
+LTPVERSION=20200120
 case $ARCH-$RELEASE in
     m68k-etch-m68k) LTPVERSION=20150119
 	            PATCHES="filter_out-cacheflush.patch filter_out-containers.patch filter_out-hyperthreading.patch" ;;
@@ -68,7 +68,8 @@ apt-get -y --allow-unauthenticated install xz-utils
 EOF
 
 if ! cmp $TAR.tar.xz $CHROOT/root/$TAR.tar.xz ; then
-    cp $TAR.tar.xz $CHROOT/root || exit 1
+    cp $TAR.tar.xz $CHROOT/root/ || exit 1
+    rm -fr $CHROOT/opt/ltp
 fi
 if [ ! -e $CHROOT/root/$TAR/configure ] ; then
 	( cd $CHROOT/root && tar Jxvf $TAR.tar.xz ) || exit 1
@@ -107,15 +108,27 @@ cat >> $CHROOT/opt/ltp/skipfile <<EOF
 fcntl14
 fcntl14_64
 EOF
+elif [ "$ARCH" = "mips64" ] ; then
+cat >> $CHROOT/opt/ltp/skipfile <<EOF
+msgstress04
+EOF
 elif [ "$ARCH" = "mips" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
 msgstress04
+EOF
+elif [ "$ARCH" = "alpha" ] ; then
+cat >> $CHROOT/opt/ltp/skipfile <<EOF
+mlockall02
 EOF
 elif [ "$ARCH" = "hppa" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
 mq_notify01
 EOF
 elif [ "$ARCH" = "riscv64" ] ; then
+cat >> $CHROOT/opt/ltp/skipfile <<EOF
+msgstress04
+EOF
+elif [ "$ARCH" = "s390x" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
 msgstress04
 EOF
