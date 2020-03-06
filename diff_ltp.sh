@@ -21,6 +21,6 @@ for release in $RELEASES ; do
 
         echo "diff $release $arch $TAG"
 	dir=archive/$arch/$release
-	diff -wu $dir/$PREVIOUS/results/* $dir/$LATEST/results/*
+	diff -wu --color=always $dir/$PREVIOUS/results/* $dir/$LATEST/results/*
     done
-done
+done | less -R
