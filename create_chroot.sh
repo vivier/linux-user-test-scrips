@@ -67,9 +67,10 @@ case $TARGET in
 	    exit 1
 	esac
         ;;
-    xenial|precise|cosmic|bionic|artful|eoan|devel)
+    xenial|precise|cosmic|bionic|artful|disco|eoan|devel)
 	NEED_GO="yes"
-        DISTRO_KEYRING="ubuntu-keyring ubuntu-extras-keyring"
+        DISTRO_KEYRING="ubuntu-keyring" # ubuntu-extras-keyring"
+        INCLUDE="iputils-ping,apt-utils,gnupg"
         case $ARCH in
         armhf|arm64|powerpc|ppc64el|s390x)
             REPO=http://ports.ubuntu.com/ubuntu-ports/
@@ -120,6 +121,10 @@ case $TARGET in
         esac
         ;;
     stretch)
+        REPO=http://ftp.de.debian.org/debian
+        ;;
+    buster)
+        NEED_GO=yes
         REPO=http://ftp.de.debian.org/debian
         ;;
     *)  echo "Unknown distro target $TARGET"
