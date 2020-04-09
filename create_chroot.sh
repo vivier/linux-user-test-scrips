@@ -9,11 +9,6 @@ if [ ! -x "$QEMU_PATH" ] ; then
     exit 1
 fi
 
-if ! file "$QEMU_PATH" | grep -q "statically linked" ; then
-    echo "$QEMU_PATH needs to be statically linked"
-    exit 1
-fi
-
 QEMU_NAME=$(basename $QEMU_PATH)
 QEMU_ARCH=${QEMU_NAME##*-}
 
