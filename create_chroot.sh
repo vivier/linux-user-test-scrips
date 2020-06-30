@@ -170,6 +170,8 @@ if [ "$TARGET_MACHINE" != "$UTS_MACHINE" ] ; then
 fi
 
 
+cat archive_2020.key | isolate $CHROOT apt-key add -
+
 isolate $CHROOT ip a
 isolate $CHROOT uname -a &&
 isolate $CHROOT date &&

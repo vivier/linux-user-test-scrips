@@ -58,11 +58,13 @@ fi
 
 isolate $CHROOT <<EOF
 export PATH=/usr/bin:/usr/sbin:/bin:/sbin
-mount proc /proc -t proc
 mount dev /dev -t devtmpfs
 mount devpts /dev/pts -t devpts
 apt-get --allow-unauthenticated $APT_OPT -y update
-apt-get -y --allow-unauthenticated install gcc make sudo procps
+apt-get -y --allow-unauthenticated install procps
+apt-get -y --allow-unauthenticated install gcc
+apt-get -y --allow-unauthenticated install make
+apt-get -y --allow-unauthenticated install sudo
 apt-get -y --allow-unauthenticated install iproute2
 apt-get -y --allow-unauthenticated install xz-utils
 EOF
@@ -83,7 +85,6 @@ if [ ! -d $CHROOT/opt/ltp ] ; then
     rm -f $CHROOT/opt/ltp
     isolate $CHROOT 2>&1 <<EOF
 export PATH=/usr/bin:/usr/sbin:/bin:/sbin
-mount proc /proc -t proc
 mount dev /dev -t devtmpfs
 mount devpts /dev/pts -t devpts
 cd /root/$TAR && \
@@ -110,11 +111,9 @@ fcntl14_64
 EOF
 elif [ "$ARCH" = "mips64" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
-msgstress04
 EOF
 elif [ "$ARCH" = "mips" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
-msgstress04
 EOF
 elif [ "$ARCH" = "alpha" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
@@ -126,16 +125,13 @@ mq_notify01
 EOF
 elif [ "$ARCH" = "riscv64" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
-msgstress04
 EOF
 elif [ "$ARCH" = "s390x" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
-msgstress04
 EOF
 elif [ "$ARCH" = "m68k" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
 mq_notify01
-msgstress04
 EOF
 elif [ "$ARCH" = "powerpc" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
@@ -145,7 +141,6 @@ fi
 
 isolate $CHROOT <<EOF
 export PATH=/usr/bin:/usr/sbin:/bin:/sbin
-mount proc /proc -t proc
 mount dev /dev -t devtmpfs
 mount devpts /dev/pts -t devpts
 cd /opt/ltp &&
