@@ -27,7 +27,7 @@ if [ "$ARCH" = "m68k" -a "$RELEASE" = "etch" ] ; then
     RELEASE="etch-m68k"
 fi
 
-LTPVERSION=20200120
+LTPVERSION=20200515
 case $ARCH-$RELEASE in
     m68k-etch-m68k) LTPVERSION=20150119
 	            PATCHES="filter_out-cacheflush.patch filter_out-containers.patch filter_out-hyperthreading.patch" ;;
@@ -68,6 +68,9 @@ apt-get -y --allow-unauthenticated install sudo
 apt-get -y --allow-unauthenticated install iproute2
 apt-get -y --allow-unauthenticated install xz-utils
 EOF
+
+# some LTP tests check the kernel config
+cp /boot/config-$(uname -r) $CHROOT/boot/
 
 if ! cmp $TAR.tar.xz $CHROOT/root/$TAR.tar.xz ; then
     cp $TAR.tar.xz $CHROOT/root/ || exit 1
