@@ -172,7 +172,11 @@ fi
 
 cat archive_2020.key | isolate $CHROOT apt-key add -
 
-isolate $CHROOT ip a
+if isolate $CHROOT which ip ; then
+	isolate $CHROOT ip l || exit
+	isolate $CHROOT ip a || exit
+	isolate $CHROOT ip r || exit
+fi
 isolate $CHROOT uname -a &&
 isolate $CHROOT date &&
 isolate $CHROOT ls -l /qemu-$QEMU_ARCH && 
