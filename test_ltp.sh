@@ -140,6 +140,10 @@ elif [ "$ARCH" = "powerpc" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
 mremap03
 EOF
+elif [ "$ARCH" = "sparc" ] ; then
+cat >> $CHROOT/opt/ltp/skipfile <<EOF
+kill10
+EOF
 fi
 
 isolate $CHROOT <<EOF
