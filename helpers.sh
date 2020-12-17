@@ -12,5 +12,5 @@ function copy_binaries
 
 function isolate
 {
-    unshare --ipc --uts --pid --fork --kill-child --mount --mount-proc --root "$@"
+    unshare --time --ipc --uts --pid --fork --kill-child --mount --mount-proc --root "$@"
 }
