@@ -27,7 +27,7 @@ if [ "$ARCH" = "m68k" -a "$RELEASE" = "etch" ] ; then
     RELEASE="etch-m68k"
 fi
 
-LTPVERSION=20200515
+LTPVERSION=20200930
 case $ARCH-$RELEASE in
     m68k-etch-m68k) LTPVERSION=20150119
 	            PATCHES="filter_out-cacheflush.patch filter_out-containers.patch filter_out-hyperthreading.patch" ;;
@@ -138,6 +138,7 @@ mq_notify01
 EOF
 elif [ "$ARCH" = "powerpc" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
+kill12
 mremap03
 EOF
 elif [ "$ARCH" = "sparc" ] ; then
