@@ -36,7 +36,7 @@ case $QEMU_ARCH in
     mips64el)    UTS_MACHINE=mips64 ;;
     arm)         UTS_MACHINE=armv7l ;;
     hppa)        UTS_MACHINE=parisc ;;
-    sparc32plus) UTS_MACHINE=sparc ;;
+    sparc32plus) UTS_MACHINE=sparc64 ;;
     i386)        UTS_MACHINE=i686      ;;
     *)           UTS_MACHINE=$QEMU_ARCH ;;
 esac
@@ -119,7 +119,11 @@ case $TARGET in
         UPDATE_OPT="--allow-unauthenticated --allow-insecure-repositories"
         UPGRADE_OPT="--allow-unauthenticated --fix-missing"
         case $ARCH in
-	m68k|ppc64|sh4|sparc64|riscv64|alpha|powerpc|powerpcspe|hppa)
+	m68k|ppc64|sh4|riscv64|alpha|powerpc|powerpcspe|hppa)
+            REPO=http://ftp.de.debian.org/debian-ports/
+            ;;
+	sparc64)
+	    APT_CONF="APT::Sandbox::User root;"
             REPO=http://ftp.de.debian.org/debian-ports/
             ;;
         *)
@@ -151,6 +155,10 @@ if [ ! -d $CHROOT ] ; then
                 $TARGET $CHROOT $REPO && \
     cp "$QEMU_PATH" $CHROOT/ && \
     isolate $CHROOT ./debootstrap/debootstrap --second-stage || exit
+
+    if [ "$APT_CONF" != "" ] ; then
+        echo "$APT_CONF" > $CHROOT/etc/apt/apt.conf
+    fi
 
     cat > $CHROOT/etc/apt/sources.list <<EOF
 deb $REPO $TARGET main
