@@ -34,6 +34,7 @@ case $ARCH-$RELEASE in
     hppa-sid)       PATCHES="fix-hppa-SIGRTMIN.patch" ;;
     alpha-sid)      : ;;
     m68k-sid)       PATCHES="filter_out-cacheflush.patch filter_out-containers.patch filter_out-hyperthreading.patch" ;;
+    sparc64-sid)    PATCHES="undefine-__kernel_old_timeval.patch" ;;
 esac
 
 TAR=ltp-full-$LTPVERSION
@@ -131,6 +132,7 @@ cat >> $CHROOT/opt/ltp/skipfile <<EOF
 EOF
 elif [ "$ARCH" = "s390x" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
+kill10
 EOF
 elif [ "$ARCH" = "m68k" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
@@ -144,6 +146,13 @@ EOF
 elif [ "$ARCH" = "sparc" ] ; then
 cat >> $CHROOT/opt/ltp/skipfile <<EOF
 kill10
+EOF
+elif [ "$ARCH" = "sparc64" ] ; then
+cat >> $CHROOT/opt/ltp/skipfile <<EOF
+getrusage04
+msgstress01
+msgstress02
+msgstress03
 EOF
 fi
 

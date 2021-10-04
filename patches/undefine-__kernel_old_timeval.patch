@@ -1,0 +1,14 @@
+--- a/include/tst_timer.h	2021-10-01 13:36:31.546745675 +0000
++++ b/include/tst_timer.h	2021-10-01 13:50:21.887332826 +0000
+@@ -99,11 +99,6 @@
+ 
+ typedef __kernel_long_t	__kernel_old_time_t;
+ 
+-struct __kernel_old_timeval {
+-	__kernel_old_time_t	tv_sec;		/* seconds */
+-	__kernel_suseconds_t	tv_usec;	/* microseconds */
+-};
+-
+ struct __kernel_old_timespec {
+ 	__kernel_old_time_t	tv_sec;		/* seconds */
+ 	__kernel_old_time_t	tv_nsec;	/* nanoseconds */
