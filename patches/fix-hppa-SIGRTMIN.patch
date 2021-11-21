@@ -1,4 +1,4 @@
-iff --git a/lib/tst_sig.c b/lib/tst_sig.c
+diff --git a/lib/tst_sig.c b/lib/tst_sig.c
 index 6d77aeafdb27..7f2c72610faa 100644
 --- a/lib/tst_sig.c
 +++ b/lib/tst_sig.c
