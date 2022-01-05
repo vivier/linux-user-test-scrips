@@ -160,6 +160,16 @@ isolate $CHROOT <<EOF
 export PATH=/usr/bin:/usr/sbin:/bin:/sbin
 mount dev /dev -t devtmpfs
 mount devpts /dev/pts -t devpts
+mount sysfs /sys -t sysfs
+mount securityfs /sys/kernel/security -t securityfs
+mount cgroup2 /sys/fs/cgroup -t cgroup2
+mount pstore /sys/fs/pstore -t pstore
+mount none  /sys/fs/bpf -t bpf
+mount selinuxfs /sys/fs/selinux -t selinuxfs
+mount debugfs /sys/kernel/debug -t debugfs
+mount tracefs /sys/kernel/tracing -t tracefs
+mount fusectl /sys/fs/fuse/connections -t fusectl
+mount configfs /sys/kernel/config -t configfs
 cd /opt/ltp &&
 rm -f output/* results/* &&
 time ./runltp -f syscalls -S ./skipfile -g ltp-$ARCH-$TAG.html -o ltp-$ARCH-$TAG.log
