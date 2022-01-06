@@ -75,7 +75,7 @@ case $TARGET in
             exit 1
         esac
 	;;
-    xenial|precise|groovy|devel)
+    xenial|precise|devel)
 	NEED_GO="yes"
         DISTRO_KEYRING="ubuntu-keyring" # ubuntu-extras-keyring"
         INCLUDE="iputils-ping,apt-utils,gnupg"
