@@ -122,6 +122,9 @@ case $TARGET in
 	m68k|ppc64|sh4|riscv64|alpha|powerpc|powerpcspe|hppa)
             REPO=http://ftp.de.debian.org/debian-ports/
             ;;
+        alpha)
+            REPO=http://ftp.ports.debian.org/debian-ports/
+            ;;
 	sparc64)
 	    APT_CONF="APT::Sandbox::User root;"
             REPO=http://ftp.de.debian.org/debian-ports/
@@ -133,7 +136,7 @@ case $TARGET in
         esac
         ;;
     stretch)
-        REPO=http://ftp.de.debian.org/debian
+        REPO=http://archive.debian.org/debian
         ;;
     buster)
         NEED_GO=yes
@@ -191,7 +194,14 @@ if [ "$TARGET_MACHINE" != "$UTS_MACHINE" ] ; then
 fi
 
 
-cat archive_2020.key | isolate $CHROOT apt-key add -
+YEARS="2020 2021 2022 2023 2024"
+for year in $YEARS ; do
+	KEY="archive_$year.key"
+	if [ ! -e $KEY ] ; then
+		curl -O https://www.ports.debian.org/$KEY
+	fi
+	cat $KEY | isolate $CHROOT apt-key add -
+done
 
 if isolate $CHROOT which ip ; then
 	isolate $CHROOT ip l || exit
