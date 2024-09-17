@@ -27,14 +27,16 @@ if [ "$ARCH" = "m68k" -a "$RELEASE" = "etch" ] ; then
     RELEASE="etch-m68k"
 fi
 
-LTPVERSION=20200930
+LTPVERSION=20230127
 case $ARCH-$RELEASE in
     m68k-etch-m68k) LTPVERSION=20150119
 	            PATCHES="filter_out-cacheflush.patch filter_out-containers.patch filter_out-hyperthreading.patch" ;;
-    hppa-sid)       PATCHES="fix-hppa-SIGRTMIN.patch" ;;
+    hppa-sid)       PATCHES="fix-hppa-SIGRTMIN.patch undefine-kernel_time.patch" ;;
     alpha-sid)      : ;;
     m68k-sid)       PATCHES="filter_out-cacheflush.patch filter_out-containers.patch filter_out-hyperthreading.patch" ;;
     sparc64-sid)    PATCHES="undefine-__kernel_old_timeval.patch" ;;
+    sh4-sid)        PATCHES="undefine-kernel_time.patch" ;;
+    sparc-wheezy)   LTPVERSION=20200930
 esac
 
 TAR=ltp-full-$LTPVERSION
@@ -58,7 +60,7 @@ if [ "$RELEASE_NUMBER" = "8.10" -o "$RELEASE_NUMBER" = "5.0.10" ]; then
 fi
 
 isolate $CHROOT <<EOF
-export PATH=/usr/bin:/usr/sbin:/bin:/sbin
+export PATH=/usr/bin:/usr/sbin:/bin:/sbin:/opt/ltp/testcases/bin
 mount dev /dev -t devtmpfs
 mount devpts /dev/pts -t devpts
 apt-get --allow-unauthenticated $APT_OPT -y update
@@ -156,8 +158,13 @@ msgstress03
 EOF
 fi
 
+KERVER=$(uname -r)
+sudo mkdir -p $CHROOT/lib/modules/$KERVER
+sudo cp -p /lib/modules/$KERVER/modules.dep $CHROOT/lib/modules/$KERVER/modules.dep
+sudo cp -p /lib/modules/$KERVER/modules.builtin $CHROOT/lib/modules/$KERVER/modules.builtin
+
 isolate $CHROOT <<EOF
-export PATH=/usr/bin:/usr/sbin:/bin:/sbin
+export PATH=/usr/bin:/usr/sbin:/bin:/sbin:
 mount dev /dev -t devtmpfs
 mount devpts /dev/pts -t devpts
 mount sysfs /sys -t sysfs
