@@ -6,7 +6,7 @@ function copy_binaries
             echo $arch
         done
     done | sort -u | while read arch ; do
-        cp $QEMU_BUILDIR/$arch-linux-user/qemu-$arch binaries
+        cp $QEMU_BUILDIR/qemu-$arch binaries
     done
 }
 
